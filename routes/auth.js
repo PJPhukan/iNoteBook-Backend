@@ -6,10 +6,10 @@ const User = require('../models/User')
 const { checkSchema } = require('express-validator');
 const { body, validationResult } = require('express-validator');
 
-//Create a user Using:-> POST '/api/auth/' ,Doesn't require auth 
 
 
-router.post('/', checkSchema({
+//Create a user Using:-> POST '/api/auth/createuser' ,Doesn't require auth (no login required)
+router.post('/createuser', checkSchema({
    //name schema check
    name: {
       isLength: {
@@ -30,7 +30,7 @@ router.post('/', checkSchema({
       },
       errorMessage: "Password should be at least 6 character!"
    },
-}), (req, res) => {
+}), async (req, res) => {
 
 
    //error handling
@@ -39,15 +39,26 @@ router.post('/', checkSchema({
       return res.status(400).json({ errors: errors.array() });
    }
 
-   //send data to database
-   User.create({
-      name: req.body.name,
-      password: req.body.password,
-      email: req.body.email
-   }).then(user => res.json(user)).catch(err => {
-      console.log(err);
-      res.json({ error: "Email Already exist !" });
-   });
+   try {
+      let user = await User.findOne({ email: req.body.email })
+      
+      //Check Email Already exist or not
+      if (user) {
+         return res.status(400).json({ error: "Email Already exist !" })
+      }
+
+      //create a new user
+      user = await User.create({
+         name: req.body.name,
+         password: req.body.password,
+         email: req.body.email
+      })
+      res.json(user)
+   } catch (error) {
+      //catch error
+      console.error(error.massage);
+      sres.status(500).json("Some error occured!");
+   }
 
 
 })

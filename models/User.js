@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const {Schema}=mongoose;
 
+//Create user schema
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -20,6 +21,7 @@ const UserSchema = new Schema({
         default:Date.now
     }
 });
+//create user model
 const User = mongoose.model("user", UserSchema);
-User.createIndexes();
+// User.createIndexes();
 module.exports = User;
