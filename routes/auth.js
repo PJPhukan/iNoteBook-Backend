@@ -7,7 +7,13 @@ const router = express.Router();
 const User = require('../models/User')
 const { checkSchema } = require('express-validator');
 const { body, validationResult } = require('express-validator');
-const JWD_SECREAT = "pjphukan"
+
+//Secret jwt string
+// const JWD_SECREAT = process.env.JWD_SECREAT_KEY
+const JWD_SECREAT ="pjphukan"
+
+//Middleware import
+const fetchuser = require('../Middleware/fetchuser')
 
 
 //EndPoints:::---->>>Create a user Using:-> POST '/api/auth/createuser' ,Doesn't require auth (no login required)
@@ -140,5 +146,30 @@ router.post('/login', checkSchema({
    }
 
 })
+
+
+
+
+//EndPoints:::---->>>Get logged in user details:-> POST '/api/auth/getuser' , login required
+
+//fetchuser is a middleware
+router.post('/getuser',fetchuser, async (req, res) => {
+
+   try {
+      const userId = req.user.id;
+      const user = await User.findById(userId).select("--password")
+      res.send(user);
+
+   } catch (error) {
+
+      //If error occured then handling the error in the catch block
+      console.error(error.massage);
+
+      // console.log(error)
+      res.status(500).send("Internal Server Error");
+   }
+})
+
+
 
 module.exports = router;
