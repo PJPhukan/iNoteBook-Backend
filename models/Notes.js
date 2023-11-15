@@ -3,16 +3,21 @@ const { Schema } = mongoose;
 
 
 const NotesSchema = new Schema({
+    user: {
+        // Connect  with user schema and notes schema
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
     title: {
-        type: string,
+        type: String,
         required: true
     },
     description: {
-        type: string,
+        type: String,
         required: true
     },
     tag: {
-        type: string,
+        type: String,
         default:"general"
     },
     date: {

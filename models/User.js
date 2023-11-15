@@ -3,6 +3,7 @@ const {Schema}=mongoose;
 
 //Create user schema
 const UserSchema = new Schema({
+    
     name: {
         type: String,
         required: true
