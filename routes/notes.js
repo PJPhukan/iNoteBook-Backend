@@ -47,7 +47,7 @@ router.post('/addnote', fetchuser, checkSchema({
     },
 
     //description schema check
-    description: { 
+    description: {
         errorMessage: "Please enter valid description"
 
     }
@@ -68,7 +68,7 @@ router.post('/addnote', fetchuser, checkSchema({
 
         //create a schcema for user notes
         const note = new Notes({
-            title, description , tag ,user: req.user.id
+            title, description, tag, user: req.user.id
         })
 
         const savedNote = await note.save();
@@ -85,4 +85,58 @@ router.post('/addnote', fetchuser, checkSchema({
     }
 
 })
+
+
+
+//EndPoints:::---->>>Update Existing notes using:-> PUT '/api/notes/updatenotes' , login required
+
+router.put('/updatenotes/:id', fetchuser, async (req, res) => {
+
+
+    try {
+        //destructure
+        const { title, description, tag } = req.body;
+
+        //Create newNote object
+        const NewNote = {};
+
+        //If Title comes from the user side
+        if (title) { NewNote.title = title };
+
+        //If Description comes from the user side
+        if (description) { NewNote.description = description };
+
+        //If Tag comes from the user side
+        if (tag) { NewNote.tag = tag };
+
+        //Find the note to be updated and update it
+        let note =await Notes.findById(req.params.id);
+
+        //Check request note id available or not
+        if (!note) {
+            return res.status(404).send("Not Found!");
+        }
+
+        //Check login user and note user id same or not
+        if (note.user.toString() !== req.user.id) {
+            return res.status(401).send("Not Allowed!")
+        }
+
+        //Update note
+        note = await Notes.findByIdAndUpdate(req.params.id, { $set: NewNote }, { new: true })
+
+        //Send Note to User
+        res.send({ note })
+
+    } catch (error) {
+
+        //If error occured then handling the error in the catch block
+        console.error(error.massage);
+
+        // console.log(error)
+        res.status(500).send("Internal Server Error");
+    }
+
+})
+
 module.exports = router;
