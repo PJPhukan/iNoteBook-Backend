@@ -110,7 +110,7 @@ router.put('/updatenotes/:id', fetchuser, async (req, res) => {
         if (tag) { NewNote.tag = tag };
 
         //Find the note to be updated and update it
-        let note =await Notes.findById(req.params.id);
+        let note = await Notes.findById(req.params.id);
 
         //Check request note id available or not
         if (!note) {
@@ -127,6 +127,48 @@ router.put('/updatenotes/:id', fetchuser, async (req, res) => {
 
         //Send Note to User
         res.send({ note })
+
+    } catch (error) {
+
+        //If error occured then handling the error in the catch block
+        console.error(error.massage);
+
+        // console.log(error)
+        res.status(500).send("Internal Server Error");
+    }
+
+})
+
+
+
+
+
+//EndPoints:::---->>>Delete Existing notes using:-> DELETE '/api/notes/deletenotes' , login required
+
+router.delete('/deletenotes/:id', fetchuser, async (req, res) => {
+
+
+    try {
+
+
+        //Find the note to be delete and delete it
+        let note = await Notes.findById(req.params.id);
+
+        //Check request note id available or not
+        if (!note) {
+            return res.status(404).send("Not Found!");
+        }
+
+        //Check login user and note user id same or not
+        if (note.user.toString() !== req.user.id) {
+            return res.status(401).send("Not Allowed!")
+        }
+
+        //Delete note
+        note = await Notes.findByIdAndDelete(req.params.id)
+
+        //Send Note to User
+        res.send("Succesfully deleted")
 
     } catch (error) {
 
