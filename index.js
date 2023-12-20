@@ -1,6 +1,7 @@
 //require section
 const express = require('express');
 const MongoToConnect=require('./db');
+let cors = require('cors')
 
 //Connect to mongoose
 MongoToConnect();
@@ -10,6 +11,7 @@ const port = 8000;
 
 //Middleware
 app.use(express.json());
+app.use(cors())
 
 
 //Availble routes
