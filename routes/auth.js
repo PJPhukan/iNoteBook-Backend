@@ -13,7 +13,7 @@ const { body, validationResult } = require('express-validator');
 const JWD_SECREAT ="pjphukan"
 
 //Middleware import
-const fetchuser = require('../Middleware/fetchuser')
+const fetchuser = require('../Middleware/fetchuser') 
 
 
 //EndPoints:::---->>>Create a user Using:-> POST '/api/auth/createuser' ,Doesn't require auth (no login required)
