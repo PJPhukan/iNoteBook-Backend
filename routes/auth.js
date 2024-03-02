@@ -10,10 +10,10 @@ const { body, validationResult } = require('express-validator');
 
 //Secret jwt string
 // const JWD_SECREAT = process.env.JWD_SECREAT_KEY
-const JWD_SECREAT ="pjphukan"
+const JWD_SECREAT = "pjphukan"
 
 //Middleware import
-const fetchuser = require('../Middleware/fetchuser') 
+const fetchuser = require('../Middleware/fetchuser')
 
 
 //EndPoints:::---->>>Create a user Using:-> POST '/api/auth/createuser' ,Doesn't require auth (no login required)
@@ -79,7 +79,7 @@ router.post('/createuser', checkSchema({
       // console.log(jwtData)
 
       // res.json(user)
-      res.json({ authToken })
+      res.json({ success, authToken })
 
    } catch (error) {
       //catch error
@@ -111,19 +111,20 @@ router.post('/login', checkSchema({
    const { email, password } = req.body;
 
    try {
+      let success=false;
       //Check user email exists or not in the database
       const user = await User.findOne({ email })
       // console.log(user)
       //If user email does not exists in the database then it return an error with an bad request 400.
       if (!user) {
-         return res.status(400).json({ error: "Please enter correct credentials" })
+         return res.status(400).json({ success,error: "Please enter correct credentials" })
       }
 
       //compare user passoed with the database for login
       const passwordCompare = await bcrypt.compare(password, user.password);//It returns a boolean value 
       if (!passwordCompare) {
          //if user detail does not match with the user database information then return a bed requast and an error massage 
-         return res.status(400).json({ error: "Please enter correct credentials" })
+         return res.status(400).json({success, error: "Please enter correct credentials" })
       }
 
 
@@ -134,9 +135,9 @@ router.post('/login', checkSchema({
          }
       }
       const authToken = jwt.sign(data, JWD_SECREAT)
-
+      success=true;
       //Return the user authotication token
-      res.json({ authToken })
+      res.json({ success, authToken })
 
    } catch (error) {
       //If error occured then handling the error in the catch block
@@ -153,7 +154,7 @@ router.post('/login', checkSchema({
 //EndPoints:::---->>>Get logged in user details:-> POST '/api/auth/getuser' , login required
 
 //fetchuser is a middleware
-router.post('/getuser',fetchuser, async (req, res) => {
+router.post('/getuser', fetchuser, async (req, res) => {
 
    try {
       const userId = req.user.id;
