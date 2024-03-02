@@ -41,12 +41,12 @@ router.post('/createuser', checkSchema({
       errorMessage: "Password should be at least 6 character!"
    },
 }), async (req, res) => {
-
+   let success=false;
 
    //error handling
    const errors = validationResult(req);
    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success, errors: errors.array() });
    }
 
    try {
@@ -54,7 +54,7 @@ router.post('/createuser', checkSchema({
 
       //Check Email Already exist or not
       if (user) {
-         return res.status(400).json({ error: "Email Already exist !" })
+         return res.status(400).json({success, error: "Email Already exist !" })
       }
 
       //password secure section
@@ -78,6 +78,7 @@ router.post('/createuser', checkSchema({
       const authToken = jwt.sign(data, JWD_SECREAT)
       // console.log(jwtData)
 
+      success=true;
       // res.json(user)
       res.json({ success, authToken })
 
